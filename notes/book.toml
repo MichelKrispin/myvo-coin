@@ -1,0 +1,6 @@
+[book]
+authors = ["Michel Krispin"]
+language = "en"
+multilingual = false
+src = "src"
+title = "How to build a Blockchain"
