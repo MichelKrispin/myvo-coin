@@ -4,3 +4,8 @@ language = "en"
 multilingual = false
 src = "src"
 title = "How to build a Blockchain"
+
+[preprocessor.cmdrun]
+
+[output.html]
+theme = "theme"
