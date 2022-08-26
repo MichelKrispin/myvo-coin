@@ -14,4 +14,6 @@
 
 - [Bitcoin](./bitcoin.md)
 
+  - [Transactions](./bitcoin/transactions.md)
+
 - [Ethereum](./ethereum.md)
