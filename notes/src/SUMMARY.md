@@ -6,6 +6,7 @@
 
   - [Terminology](./theory/terminology.md)
   - [Hashes](./theory/hashes.md)
+  - [Signatures](./theory/signatures.md)
   - [Merkle Tree](./theory/merkle_tree.md)
   - [Probability](./theory/probability.md)
   - [Peer-to-Peer](./theory/p2p.md)
