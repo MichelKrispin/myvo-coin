@@ -17,4 +17,4 @@
 
   - [Transactions](./bitcoin/transactions.md)
 
-- [Ethereum](./ethereum.md)
+- [myvo-coin](./myvo-coin.md)
