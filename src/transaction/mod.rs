@@ -39,11 +39,19 @@ impl Transaction {
             id_hash: String::from("very_unique_hash"),
         }
     }
+}
 
-    pub fn info(&self) {
+use std::fmt;
+
+impl fmt::Display for Transaction {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "[Transaction]:{}\n", self.id_hash)?;
         for input in &self.inputs {
-            input.info();
+            write!(f, "{}\n", input)?;
         }
-        self.output.info();
+        if let Some(output) = &self.change {
+            write!(f, "{}\n", output)?;
+        }
+        write!(f, "{}", self.output)
     }
 }

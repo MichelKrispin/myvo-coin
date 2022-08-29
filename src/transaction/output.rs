@@ -5,12 +5,12 @@ pub struct Output {
     pub owner: public_key_hash::PublicKeyHash,
 }
 
-impl Output {
-    pub fn info(&self) {
-        println!(
-            "The new owner is {} and owns {}",
-            self.amount,
-            self.owner.get()
-        )
+// impl Output {}
+
+use std::fmt;
+
+impl fmt::Display for Output {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "[Output] {} of {}", self.amount, self.owner.get())
     }
 }

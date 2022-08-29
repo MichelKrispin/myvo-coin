@@ -18,14 +18,16 @@ impl Input {
             input_counter,
         }
     }
+}
 
-    pub fn info(&self) {
-        println!(
-            "Input {} is owned by {} proofed by signature {} with {}",
-            self.input_counter,
-            self.output_reference_id,
-            self.validator.signature,
-            self.validator.public_key,
+use std::fmt;
+
+impl fmt::Display for Input {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "[Input]:{} - {}\n  <{}>",
+            self.input_counter, self.output_reference_id, self.validator
         )
     }
 }
