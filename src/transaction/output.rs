@@ -1,11 +1,18 @@
 use super::public_key_hash;
 
 pub struct Output {
-    pub amount: u64,
-    pub owner: public_key_hash::PublicKeyHash,
+    amount: u64,
+    owner: public_key_hash::PublicKeyHash,
 }
 
-// impl Output {}
+impl Output {
+    pub fn create(amount: u64, hash: String) -> Self {
+        Self {
+            amount,
+            owner: public_key_hash::PublicKeyHash::create(hash),
+        }
+    }
+}
 
 use std::fmt;
 

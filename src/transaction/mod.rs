@@ -1,3 +1,4 @@
+pub mod creation;
 mod input;
 mod output;
 mod public_key_hash;
@@ -31,10 +32,7 @@ impl Transaction {
                     1,
                 ),
             ],
-            output: output::Output {
-                amount: 5,
-                owner: public_key_hash::PublicKeyHash::create(String::from("new_owner")),
-            },
+            output: output::Output::create(5, String::from("new_owner")),
             change: None,
             id_hash: String::from("very_unique_hash"),
         }
