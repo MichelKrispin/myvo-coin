@@ -1,16 +1,19 @@
-use super::public_key_hash;
+use crate::crypto::hash;
 
+/// Represents the output of a transactions
+/// with the amount of coins that belongs
+/// to this output and a hash of the public key
+/// that identifies the owner uniquely.
 pub struct Output {
     amount: u64,
-    owner: public_key_hash::PublicKeyHash,
+    owner: hash::Hash,
 }
 
 impl Output {
-    pub fn create(amount: u64, hash: String) -> Self {
-        Self {
-            amount,
-            owner: public_key_hash::PublicKeyHash::create(hash),
-        }
+    /// Creates a new output with the given amount and
+    /// the new owners hashed public key.
+    pub fn create(amount: u64, owner: hash::Hash) -> Self {
+        Self { amount, owner }
     }
 }
 
@@ -18,6 +21,6 @@ use std::fmt;
 
 impl fmt::Display for Output {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "[Output] {} of {}", self.amount, self.owner.get())
+        write!(f, "[Output] {} of {}", self.amount, self.owner)
     }
 }

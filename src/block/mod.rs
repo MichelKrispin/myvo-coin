@@ -1,24 +1,27 @@
 pub mod first_block;
 
 use super::transaction;
+use crate::crypto::hash;
 
 pub struct Block {
     last_id_hash: String,
     creation: transaction::creation::Creation,
     transactions: Vec<transaction::Transaction>,
-    id_hash: String,
+    id_hash: hash::Hash,
 }
 
 impl Block {
     pub fn new(last_id_hash: String) -> Self {
         Self {
             last_id_hash,
-            creation: transaction::creation::Creation::new(String::from("new owner of creation")),
+            creation: transaction::creation::Creation::new(hash::Hash::create(String::from(
+                "new owner of creation",
+            ))),
             transactions: vec![
                 transaction::Transaction::empty(),
                 transaction::Transaction::empty(),
             ],
-            id_hash: String::from("this blocks hash"),
+            id_hash: hash::Hash::create(String::from("this blocks hash")),
         }
     }
 }

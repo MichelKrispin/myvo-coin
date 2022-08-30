@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-ed25519 = "1.5"
+sha3 = "0.10.2"
 ed25519-dalek = "1"
 rand = "0.7"
+hex = "0.4.3"
