@@ -5,7 +5,10 @@ use crate::crypto::hash;
 /// to this output and a hash of the public key
 /// that identifies the owner uniquely.
 pub struct Output {
+    /// The amount of coins that belong to this output.
     amount: u64,
+
+    /// The hash of the owner of this output and its coins.
     owner: hash::Hash,
 }
 

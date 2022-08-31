@@ -1,17 +1,29 @@
 use super::output;
 use crate::crypto::hash;
 
+/// The default numbe of coins that will be created
+/// when a new block is added to the chain.
 const DEFAULT_CREATION_AMOUNT: u64 = 1;
 
+/// A creation block that should be included
+/// at the top of a block.
 pub struct Creation {
-    pub output: output::Output,
-    pub id_hash: hash::Hash,
+    /// The new owner of the creation's block new coins.
+    output: output::Output,
+
+    /// The hash of this block to make it resemble a
+    /// 'normal' transaction.
+    id_hash: hash::Hash,
 }
 
 impl Creation {
-    pub fn new(hash: hash::Hash) -> Self {
+    /// Create a new creation transaction with the new owner.
+    ///
+    /// # Arguments
+    /// new_owner: The new owner of this creation's output.
+    pub fn new(new_owner: hash::Hash) -> Self {
         Self {
-            output: output::Output::create(DEFAULT_CREATION_AMOUNT, hash),
+            output: output::Output::create(DEFAULT_CREATION_AMOUNT, new_owner),
             id_hash: hash::Hash::create(String::from("the creation hash")),
         }
     }

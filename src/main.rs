@@ -16,7 +16,12 @@ fn block_test() {
     println!("=====\n");
 
     // Block
-    let block = block::Block::new(String::from("the very first hash"));
+    let mut block = block::Block::new(
+        crypto::hash::Hash::create(String::from("the very first hash")),
+        crypto::hash::Hash::create(String::from("new owner of creation")),
+    );
+    block.add_transactions(transaction::Transaction::empty());
+    block.compute_hash();
     println!("{}", block);
 }
 

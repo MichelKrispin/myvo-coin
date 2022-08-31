@@ -2,15 +2,24 @@ use super::transaction;
 
 use crate::crypto::hash;
 
+/// The very first block in the chain.
+/// As it has no predecessor, it looks a little bit different.
 pub struct FirstBlock {
+    /// The first creation to get some coins.
     creation: transaction::creation::Creation,
+
+    /// The hash of this block to have an address.
     id_hash: hash::Hash,
 }
 
 impl FirstBlock {
-    pub fn new(output_hash: hash::Hash) -> Self {
+    /// Create the very first block.
+    ///
+    /// # Arguments
+    /// first_owner_hash: The hash of the owner of the very first coins.
+    pub fn new(first_owner_hash: hash::Hash) -> Self {
         Self {
-            creation: transaction::creation::Creation::new(output_hash),
+            creation: transaction::creation::Creation::new(first_owner_hash),
             id_hash: hash::Hash::create(String::from("the very first hash")),
         }
     }
