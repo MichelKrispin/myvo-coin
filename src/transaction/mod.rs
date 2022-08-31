@@ -27,6 +27,7 @@ impl Transaction {
     pub fn empty() -> Self {
         // Two dummy inputs.
         let inputs = vec![
+            /*
             input::Input::create(
                 hash::Hash::create(String::from("last_output_1")),
                 validator::Validator {
@@ -41,6 +42,7 @@ impl Transaction {
                     public_key: String::from("full_public_key_last_output_2"),
                 },
             ),
+            */
         ];
         // A dummy output
         let output = output::Output::create(5, hash::Hash::create(String::from("new_owner")));
