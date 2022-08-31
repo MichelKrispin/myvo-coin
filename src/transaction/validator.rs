@@ -11,6 +11,9 @@ pub struct Validator {
 }
 
 impl Validator {
+    /// Create a validator to proof ownership over a given output
+    /// by passing on the keypair that was used to create the
+    /// output public key hash.
     pub fn create(keypair: keypair::Keypair, message: &[u8]) -> Self {
         Self {
             signature: keypair.sign(message),

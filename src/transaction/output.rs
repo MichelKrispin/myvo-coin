@@ -24,6 +24,6 @@ use std::fmt;
 
 impl fmt::Display for Output {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "[Output] {} of {}", self.amount, self.owner)
+        write!(f, "[Output] {} coins of {}", self.amount, self.owner)
     }
 }

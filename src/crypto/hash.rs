@@ -6,6 +6,7 @@ const HASH_LENGTH: usize = 64;
 
 /// A simple wrapper class around hashes.
 /// Provides utility functions to generate hashes from values.
+#[derive(Copy, Clone)]
 pub struct Hash {
     /// The hash itself with the length corresponding to the used algorithm.
     hash: [u8; HASH_LENGTH],

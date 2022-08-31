@@ -1,7 +1,7 @@
 pub mod creation;
-mod input;
-mod output;
-mod validator;
+pub mod input;
+pub mod output;
+pub mod validator;
 
 use crate::crypto::hash;
 
@@ -24,30 +24,15 @@ pub struct Transaction {
 }
 
 impl Transaction {
-    pub fn empty() -> Self {
-        // Two dummy inputs.
-        let inputs = vec![
-            /*
-            input::Input::create(
-                hash::Hash::create(String::from("last_output_1")),
-                validator::Validator {
-                    signature: String::from("signature_proofing_last_output_1"),
-                    public_key: String::from("full_public_key_last_output_1"),
-                },
-            ),
-            input::Input::create(
-                hash::Hash::create(String::from("last_output_2")),
-                validator::Validator {
-                    signature: String::from("signature_proofing_last_output_2"),
-                    public_key: String::from("full_public_key_last_output_2"),
-                },
-            ),
-            */
-        ];
-        // A dummy output
-        let output = output::Output::create(5, hash::Hash::create(String::from("new_owner")));
-        // No change
-        let change: Option<output::Output> = None;
+    pub fn new(
+        inputs: Vec<input::Input>,
+        output: output::Output,
+        change: Option<output::Output>,
+    ) -> Self {
+        // TODO: Validate whether the amount of output coins
+        // is the same as the sum of input coins.
+
+        // TODO: Don't fake that hash.
         // A fake hash
         let id_hash = hash::Hash::create(String::from("serialization of the previous stuff"));
 

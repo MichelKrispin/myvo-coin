@@ -16,12 +16,18 @@ impl FirstBlock {
     /// Create the very first block.
     ///
     /// # Arguments
-    /// first_owner_hash: The hash of the owner of the very first coins.
+    /// * `first_owner_hash` - The hash of the owner of the very first coins.
     pub fn new(first_owner_hash: hash::Hash) -> Self {
         Self {
             creation: transaction::creation::Creation::new(first_owner_hash),
             id_hash: hash::Hash::create(String::from("the very first hash")),
         }
+    }
+}
+
+impl super::GetHash for FirstBlock {
+    fn hash(&self) -> hash::Hash {
+        self.id_hash
     }
 }
 

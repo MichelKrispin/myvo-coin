@@ -2,78 +2,74 @@ mod block;
 mod crypto;
 mod transaction;
 
-fn block_test() {
-    // Transaction
-    let transaction = transaction::Transaction::empty();
-    println!("{}", transaction);
-    println!("=====\n");
+mod dummy;
+
+use block::get_hash::GetHash;
+
+fn small_chain() {
+    // Create the keypair for Alice
+    let alice = crypto::keypair::Keypair::new();
+    let alice_public_hash = crypto::hash::Hash::create(alice.public_key().as_hex());
+    println!("Alice pk:   {}", alice.public_key());
+    println!("Alice hash: {}", alice_public_hash);
 
     // First block
-    let first_block = block::first_block::FirstBlock::new(crypto::hash::Hash::create(
-        String::from("output hash of first block"),
-    ));
-    println!("{}", first_block);
-    println!("=====\n");
+    let first_block = block::first_block::FirstBlock::new(alice_public_hash);
 
-    // Block
-    let mut block = block::Block::new(
-        crypto::hash::Hash::create(String::from("the very first hash")),
-        crypto::hash::Hash::create(String::from("new owner of creation")),
-    );
-    block.add_transactions(transaction::Transaction::empty());
-    block.compute_hash();
+    // -----
+
+    // Create the keypair for Bob
+    let bob = crypto::keypair::Keypair::new();
+    let bob_public_hash = crypto::hash::Hash::create(bob.public_key().as_hex());
+    println!("Bob   hash: {}", bob_public_hash);
+
+    // Create a transaction from Alice to Bob
+    let first_transaction = {
+        // Connect the input to Alice creation coin
+        let alice_input = {
+            let validator = transaction::validator::Validator::create(alice, b"alice");
+            transaction::input::Input::create(alice_public_hash, validator)
+        };
+        // That is the only input right now
+        let inputs = vec![alice_input];
+        // Then create the output for Bobs public hash
+        let output = transaction::output::Output::create(1, bob_public_hash);
+
+        // And create the new transaction with that
+        transaction::Transaction::new(inputs, output, None)
+    };
+
+    // Then create a Creation for Alice, because she computes the block
+    // For that alice gets a new keypair, because the old one was already used.
+    let alice = crypto::keypair::Keypair::new();
+    let alice_public_hash = crypto::hash::Hash::create(alice.public_key().as_hex());
+    println!("Alice hash: {}", alice_public_hash);
+
+    // Then create the block and insert all the created information
+    let block = {
+        let last_block_hash = first_block.hash();
+        let transactions = vec![first_transaction];
+        block::Block::new(last_block_hash, alice_public_hash, transactions)
+    };
+
+    println!("\n{}\n", first_block);
     println!("{}", block);
-}
-
-use ed25519_dalek::{Keypair, Signature, Signer};
-use hex;
-use rand::rngs::OsRng;
-
-fn signature_test() {
-    let mut csprng = OsRng {};
-    let keypair: Keypair = Keypair::generate(&mut csprng);
-    let public_key = keypair.public.as_bytes();
-    println!("{}", hex::encode(public_key));
-    let message: &[u8] = b"This is a test of the tsunami alert system.";
-    let signature: Signature = keypair.sign(message);
-    println!("{}", signature.to_string());
-    println!("{}", keypair.verify(message, &signature).is_ok());
-}
-
-use sha3::{Digest, Sha3_512};
-
-fn hash_test() {
-    let mut hasher = Sha3_512::new();
-    hasher.update(b"abc");
-    let result = hasher.finalize();
-    println!("{}", hex::encode(result));
-}
-
-fn hash_public_key() {
-    let mut csprng = OsRng {};
-    let keypair: Keypair = Keypair::generate(&mut csprng);
-    let public_key = keypair.public.as_bytes();
-
-    let mut hasher = Sha3_512::new();
-    hasher.update(public_key);
-    let result: [u8; 64] = hasher.finalize().into();
-    println!("{}", hex::encode(result));
 }
 
 fn main() {
     if true {
-        block_test();
+        small_chain();
     }
 
     if false {
-        signature_test();
+        dummy::signature_test();
     }
 
     if false {
-        hash_test();
+        dummy::hash_test();
     }
 
     if false {
-        hash_public_key();
+        dummy::hash_public_key();
     }
 }
