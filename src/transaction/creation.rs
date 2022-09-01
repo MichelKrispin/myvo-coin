@@ -1,7 +1,7 @@
 use super::output;
 use crate::crypto::hash;
 
-/// The default numbe of coins that will be created
+/// The default number of coins that will be created
 /// when a new block is added to the chain.
 const DEFAULT_CREATION_AMOUNT: u64 = 1;
 

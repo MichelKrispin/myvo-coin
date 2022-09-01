@@ -47,13 +47,18 @@ impl Block {
         }
     }
 
-    /// Add a new transaction to the list of transactions
+    /// Add a new transaction to the list of transactions.
+    /// Doesn't check whether the transactions is valid!
     ///
     /// # Arguments
     /// * `transaction` - A new transaction that is hopefully valid.
     pub fn add_transactions(&mut self, transaction: transaction::Transaction) {
-        // TODO: Check if the transaction is valid
         self.transactions.push(transaction);
+    }
+
+    /// Get the transaction.
+    pub fn get_transactions(&self) -> &Vec<transaction::Transaction> {
+        &self.transactions
     }
 
     /// Compute the hash of this block.

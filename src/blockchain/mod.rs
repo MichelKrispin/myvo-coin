@@ -33,17 +33,28 @@ impl BlockChain {
     /// Checks for input validator correctness
     /// and correct hash values.
     pub fn add_block(&mut self, block: block::Block) -> bool {
-        // TODO: This is the place for all error checking stuff!
+        // This is the place for all error checking stuff!
+
+        // TODO: First check if all inputs belong to existing outputs
+        //       and that the summed amount is correct
+        //       and that the validator is correct
+
         self.blocks.push(block);
         true
     }
 
     /// Searches through all outputs in the blockchain and
-    /// returns it if found.
-    /// Otherwise returns None.
-    pub fn get_output(&self, output_hash: hash::Hash) -> Option<transaction::output::Output> {
-        // TODO: Search all blocks and all transaction for the output
-        None
+    /// returns true if found, else false.
+    fn get_output(&self, output_hash: hash::Hash) -> bool {
+        for block in &self.blocks {
+            for transaction in block.get_transactions() {
+                let owner_hash = transaction.get_output().get_owner_hash();
+                if owner_hash.as_hex() == output_hash.as_hex() {
+                    return true;
+                }
+            }
+        }
+        false
     }
 }
 

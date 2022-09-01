@@ -43,6 +43,10 @@ impl Transaction {
             id_hash,
         }
     }
+
+    pub fn get_output(&self) -> &output::Output {
+        &self.output
+    }
 }
 
 use std::fmt;

@@ -18,6 +18,11 @@ impl Output {
     pub fn create(amount: u64, owner: hash::Hash) -> Self {
         Self { amount, owner }
     }
+
+    /// Gets the owners hash.
+    pub fn get_owner_hash(&self) -> &hash::Hash {
+        &self.owner
+    }
 }
 
 use std::fmt;
