@@ -1,3 +1,4 @@
+use super::get_hash;
 use super::transaction;
 
 use crate::crypto::hash;
@@ -25,7 +26,7 @@ impl FirstBlock {
     }
 }
 
-impl super::GetHash for FirstBlock {
+impl get_hash::GetHash for FirstBlock {
     fn hash(&self) -> hash::Hash {
         self.id_hash
     }

@@ -15,6 +15,8 @@ pub struct Input {
 }
 
 impl Input {
+    /// Create a new hash with the given output hash.
+    /// Doesn't check whether the validator actually corresponds to the output.
     pub fn create(output_reference: hash::Hash, validator: validator::Validator) -> Self {
         Self {
             output_reference,

@@ -1,10 +1,10 @@
-mod block;
+mod blockchain;
 mod crypto;
 mod transaction;
 
 mod dummy;
 
-use block::get_hash::GetHash;
+use blockchain::get_hash::GetHash;
 
 fn small_chain() {
     // Create the keypair for Alice
@@ -14,7 +14,7 @@ fn small_chain() {
     println!("Alice hash: {}", alice_public_hash);
 
     // First block
-    let first_block = block::first_block::FirstBlock::new(alice_public_hash);
+    let first_block = blockchain::first_block::FirstBlock::new(alice_public_hash);
 
     // -----
 
@@ -49,11 +49,14 @@ fn small_chain() {
     let block = {
         let last_block_hash = first_block.hash();
         let transactions = vec![first_transaction];
-        block::Block::new(last_block_hash, alice_public_hash, transactions)
+        blockchain::block::Block::new(last_block_hash, alice_public_hash, transactions)
     };
 
-    println!("\n{}\n", first_block);
-    println!("{}", block);
+    println!("");
+    let mut blockchain = blockchain::BlockChain::create(first_block);
+    blockchain.add_block(block);
+    println!("{}", blockchain);
+    //println!("\n{}\n", first_block);
 }
 
 fn main() {

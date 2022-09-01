@@ -1,9 +1,6 @@
-pub mod first_block;
-pub mod get_hash;
-
+use super::get_hash;
 use super::transaction;
 use crate::crypto::hash;
-use get_hash::GetHash;
 
 /// A block in the blockchain that contains
 /// multiple transactions, the hash of the last
@@ -69,7 +66,7 @@ impl Block {
     }
 }
 
-impl GetHash for Block {
+impl get_hash::GetHash for Block {
     fn hash(&self) -> hash::Hash {
         self.id_hash
     }
