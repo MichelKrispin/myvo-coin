@@ -30,6 +30,10 @@ impl Validator {
     pub fn get_public_key(&self) -> &public_key::PublicKey {
         &self.public_key
     }
+
+    pub fn as_bytes(&self) -> [u8; INPUT_LENGTH] {
+        self.output_reference.as_bytes() + self.validator.to_bytes()
+    }
 }
 
 use std::fmt;
