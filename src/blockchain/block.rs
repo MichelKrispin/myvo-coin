@@ -62,6 +62,35 @@ impl Block {
         &self.transactions
     }
 
+    pub fn as_bytes(&self, with_hash: bool) -> Vec<u8> {
+        // Flatten the block into an array such that it can be hashed
+        let mut block: Vec<u8> = Vec::new();
+
+        // First the last hash
+        let bytes = self.last_id_hash.as_bytes();
+        block.extend(bytes);
+
+        // Then the creation
+        let bytes = self.creation.as_bytes();
+        block.extend(bytes);
+
+        // Then the transactions
+        for transaction in &self.transactions {
+            let bytes = transaction.as_bytes();
+            block.extend(bytes);
+        }
+
+        // Then the nonce
+        let bytes = self.nonce.to_be_bytes();
+        block.extend(bytes);
+
+        if with_hash {
+            block.extend(self.id_hash.as_bytes());
+        }
+
+        block
+    }
+
     /// Compute the hash of this block.
     /// Return true, if the hash has `leading_zeros` zeros in front.
     pub fn compute_hash(&mut self, leading_zeros: usize) {
@@ -69,13 +98,15 @@ impl Block {
             panic!("The leading zeros cannot be greater than the hash length!");
         }
 
+        // Compute the time
         let begin = time::Instant::now();
-        // TODO: Actually... Compute the real hash and adjust the nonce
+
+        // Then loop until a correct hash is found.
         let mut loop_counter = 0;
         loop {
             print!("{}\r", loop_counter);
 
-            // Check if the leading zeros match
+            // Check if the leading zeros match.
             let mut leading_zeros_match = true;
             let hash_bytes = self.id_hash.as_bytes();
             for i in 0..leading_zeros {
@@ -95,12 +126,14 @@ impl Block {
 
             // Otherwise adjust the nonce and recompute the hash.
             self.nonce += 1;
-            let bytes = self.nonce.to_be_bytes();
+            // let bytes = self.nonce.to_be_bytes();
+            let bytes = self.as_bytes(false);
             self.id_hash = hash::Hash::create(bytes);
 
             loop_counter += 1;
         }
 
+        // Print the elapsed time.
         let elapsed_time = begin.elapsed();
         println!("{} tries in {}ms", loop_counter, elapsed_time.as_millis());
     }

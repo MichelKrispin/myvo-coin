@@ -1,6 +1,6 @@
 use crate::crypto::hash;
 
-const OUTPUT_LENGTH: usize = 8 + hash::HASH_LENGTH;
+pub const OUTPUT_LENGTH: usize = 8 + hash::HASH_LENGTH;
 
 /// Represents the output of a transactions
 /// with the amount of coins that belongs

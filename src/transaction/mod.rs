@@ -60,7 +60,7 @@ impl Transaction {
     }
 
     // Get the complete transaction as flattened bytes
-    pub fn as_bytes(&self, with_hash: bool) -> Vec<u8> {
+    pub fn as_bytes(&self) -> Vec<u8> {
         // Flatten the transaction into an array such that it can be hashed
         let mut transaction: Vec<u8> = Vec::new();
 
@@ -78,9 +78,8 @@ impl Transaction {
             transaction.extend(change.as_bytes());
         }
 
-        if with_hash {
-            transaction.extend(self.id_hash.as_bytes());
-        }
+        // And then the hash
+        transaction.extend(self.id_hash.as_bytes());
 
         transaction
     }
