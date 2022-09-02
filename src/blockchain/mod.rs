@@ -89,6 +89,7 @@ impl BlockChain {
             }
         }
 
+        // Some information printing on the beginning of the hash.
         println!(
             "The block starts with [{}, {}, {}, {}, ...\n",
             hash_bytes[0], hash_bytes[1], hash_bytes[2], hash_bytes[3]
