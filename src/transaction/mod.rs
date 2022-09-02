@@ -59,7 +59,7 @@ impl Transaction {
         }
     }
 
-    // Get the complete transaction as flattened bytes
+    /// Get the complete transaction as flattened bytes
     pub fn as_bytes(&self) -> Vec<u8> {
         // Flatten the transaction into an array such that it can be hashed
         let mut transaction: Vec<u8> = Vec::new();
@@ -84,10 +84,12 @@ impl Transaction {
         transaction
     }
 
+    /// Return all the inputs.
     pub fn get_inputs(&self) -> &Vec<input::Input> {
         &self.inputs
     }
 
+    /// Return the output.
     pub fn get_output(&self) -> &output::Output {
         &self.output
     }

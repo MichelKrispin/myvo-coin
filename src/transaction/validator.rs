@@ -2,6 +2,7 @@ use crate::crypto::{keypair, public_key, signature};
 
 use std::convert::TryInto;
 
+/// The validator length in bytes.
 pub const VALIDATOR_LENGTH: usize = signature::SIGNATURE_LENGTH + public_key::PUBLIC_KEY_LENGTH;
 
 /// The validator to proof ownership of a given output.
@@ -35,6 +36,7 @@ impl Validator {
         &self.public_key
     }
 
+    /// Return a flat version of bytes of everything that this validator contains.
     pub fn as_bytes(&self) -> [u8; VALIDATOR_LENGTH] {
         let v1 = self.public_key.as_bytes();
         let v2 = &self.signature.as_bytes();

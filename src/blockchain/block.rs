@@ -91,8 +91,9 @@ impl Block {
         block
     }
 
-    /// Compute the hash of this block.
-    /// Return true, if the hash has `leading_zeros` zeros in front.
+    /// Compute the hash of this block until the number of
+    /// zeros tha `leading_zeros` indicate are at the front
+    /// of the hash.
     pub fn compute_hash(&mut self, leading_zeros: usize) {
         if leading_zeros > hash::HASH_LENGTH {
             panic!("The leading zeros cannot be greater than the hash length!");
@@ -138,6 +139,8 @@ impl Block {
         println!("{} tries in {}ms", loop_counter, elapsed_time.as_millis());
     }
 
+    /// Returns the hash of this block.
+    /// Doesn't check whether it is actually valid.
     pub fn get_hash(&self) -> &hash::Hash {
         &self.id_hash
     }
