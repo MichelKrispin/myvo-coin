@@ -3,11 +3,7 @@ pub mod first_block;
 pub mod get_hash;
 
 use super::transaction;
-use crate::{
-    crypto::hash,
-    transaction::{input, output},
-};
-// use get_hash::GetHash;
+use crate::{crypto::hash, transaction::output};
 
 /// A blockchain containing a list of blocks.
 pub struct BlockChain {

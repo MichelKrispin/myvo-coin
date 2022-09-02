@@ -1,5 +1,9 @@
 use crate::crypto::{keypair, public_key, signature};
 
+use std::convert::TryInto;
+
+pub const VALIDATOR_LENGTH: usize = signature::SIGNATURE_LENGTH + public_key::PUBLIC_KEY_LENGTH;
+
 /// The validator to proof ownership of a given output.
 pub struct Validator {
     /// The signature that was made with the private key that
@@ -31,8 +35,12 @@ impl Validator {
         &self.public_key
     }
 
-    pub fn as_bytes(&self) -> [u8; INPUT_LENGTH] {
-        self.output_reference.as_bytes() + self.validator.to_bytes()
+    pub fn as_bytes(&self) -> [u8; VALIDATOR_LENGTH] {
+        let v1 = self.public_key.as_bytes();
+        let v2 = &self.signature.as_bytes();
+        let whole: Vec<u8> = v1.iter().chain(v2.iter()).map(|v| *v).collect();
+        let whole: [u8; VALIDATOR_LENGTH] = whole.try_into().unwrap();
+        whole
     }
 }
 

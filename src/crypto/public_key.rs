@@ -4,6 +4,8 @@ use ed25519_dalek;
 use ed25519_dalek::Verifier;
 use hex;
 
+pub const PUBLIC_KEY_LENGTH: usize = ed25519_dalek::PUBLIC_KEY_LENGTH;
+
 /// A wrapper for a public key implementation.
 #[derive(Copy, Clone)]
 pub struct PublicKey {
@@ -17,7 +19,7 @@ impl PublicKey {
     }
 
     /// Returns the bytes of this public key.
-    pub fn as_bytes(&self) -> &[u8; ed25519_dalek::PUBLIC_KEY_LENGTH] {
+    pub fn as_bytes(&self) -> &[u8; PUBLIC_KEY_LENGTH] {
         self.key.as_bytes()
     }
 

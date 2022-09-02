@@ -1,9 +1,8 @@
 use super::validator;
 
 use crate::crypto::hash;
-use crate::crypto::signature;
 
-const INPUT_LENGTH: usize = hash::HASH_LENGTH + signature::SIGNATURE_LENGTH;
+const INPUT_LENGTH: usize = hash::HASH_LENGTH + validator::VALIDATOR_LENGTH;
 
 /// The input of a transaction that references the output of
 /// another transaction and has to provide some validator
@@ -36,7 +35,11 @@ impl Input {
     }
 
     pub fn as_bytes(&self) -> [u8; INPUT_LENGTH] {
-        self.output_reference.as_bytes() + self.validator.as_bytes()
+        let v1 = self.output_reference.as_bytes();
+        let v2 = self.validator.as_bytes();
+        let whole: Vec<u8> = v1.iter().chain(v2.iter()).map(|v| *v).collect();
+        let whole: [u8; INPUT_LENGTH] = whole.try_into().unwrap();
+        whole
     }
 }
 

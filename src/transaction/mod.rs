@@ -31,9 +31,25 @@ impl Transaction {
         output: output::Output,
         change: Option<output::Output>,
     ) -> Self {
-        // TODO: Don't fake that hash.
-        // A fake hash
-        let id_hash = hash::Hash::create(String::from("serialization of the previous stuff"));
+        // Flatten the transaction into an array such that it can be hashed
+        let mut transaction: Vec<u8> = Vec::new();
+
+        // First the inputs
+        for input in &inputs {
+            let bytes = input.as_bytes();
+            transaction.extend(bytes);
+        }
+        // Then the output
+        let bytes = output.as_bytes();
+        transaction.extend(bytes);
+
+        // Then the change, if it exists
+        if let Some(change) = &change {
+            transaction.extend(change.as_bytes());
+        }
+
+        // Then hash that
+        let id_hash = hash::Hash::create(transaction);
 
         Self {
             inputs,
@@ -41,6 +57,32 @@ impl Transaction {
             change,
             id_hash,
         }
+    }
+
+    // Get the complete transaction as flattened bytes
+    pub fn as_bytes(&self, with_hash: bool) -> Vec<u8> {
+        // Flatten the transaction into an array such that it can be hashed
+        let mut transaction: Vec<u8> = Vec::new();
+
+        // First the inputs
+        for input in &self.inputs {
+            let bytes = input.as_bytes();
+            transaction.extend(bytes);
+        }
+        // Then the output
+        let bytes = self.output.as_bytes();
+        transaction.extend(bytes);
+
+        // Then the change, if it exists
+        if let Some(change) = &self.change {
+            transaction.extend(change.as_bytes());
+        }
+
+        if with_hash {
+            transaction.extend(self.id_hash.as_bytes());
+        }
+
+        transaction
     }
 
     pub fn get_inputs(&self) -> &Vec<input::Input> {

@@ -1,5 +1,7 @@
 use crate::crypto::hash;
 
+const OUTPUT_LENGTH: usize = 8 + hash::HASH_LENGTH;
+
 /// Represents the output of a transactions
 /// with the amount of coins that belongs
 /// to this output and a hash of the public key
@@ -26,6 +28,14 @@ impl Output {
 
     pub fn get_amount(&self) -> u64 {
         self.amount
+    }
+
+    pub fn as_bytes(&self) -> [u8; OUTPUT_LENGTH] {
+        let v1 = &self.amount.to_be_bytes();
+        let v2 = self.owner.as_bytes();
+        let whole: Vec<u8> = v1.iter().chain(v2.iter()).map(|v| *v).collect();
+        let whole: [u8; OUTPUT_LENGTH] = whole.try_into().unwrap();
+        whole
     }
 }
 
