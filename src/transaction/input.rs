@@ -23,6 +23,14 @@ impl Input {
             validator,
         }
     }
+
+    pub fn get_output_reference(&self) -> &hash::Hash {
+        &self.output_reference
+    }
+
+    pub fn get_validator(&self) -> &validator::Validator {
+        &self.validator
+    }
 }
 
 use std::fmt;
@@ -31,7 +39,7 @@ impl fmt::Display for Input {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "[Input]: {}\n  <{}>",
+            "[Input]: {}\n< {}\n>",
             self.output_reference, self.validator
         )
     }

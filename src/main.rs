@@ -46,11 +46,14 @@ fn small_chain() {
     println!("Alice hash: {}", alice_public_hash);
 
     // Then create the block and insert all the created information
-    let block = {
+    let mut block = {
         let last_block_hash = first_block.hash();
         let transactions = vec![first_transaction];
         blockchain::block::Block::new(last_block_hash, alice_public_hash, transactions)
     };
+
+    // And Compute the correct hash
+    block.compute_hash(2);
 
     println!("");
     let mut blockchain = blockchain::BlockChain::create(first_block);

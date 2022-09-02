@@ -23,6 +23,10 @@ impl Output {
     pub fn get_owner_hash(&self) -> &hash::Hash {
         &self.owner
     }
+
+    pub fn get_amount(&self) -> u64 {
+        self.amount
+    }
 }
 
 use std::fmt;

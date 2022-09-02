@@ -28,7 +28,7 @@ impl PublicKey {
 
     /// Check that the signature is actually the message signed
     /// with the correct private key.
-    pub fn check(&self, message: &[u8], signature: signature::Signature) -> bool {
+    pub fn check(&self, message: &[u8], signature: &signature::Signature) -> bool {
         let signed_message = signature.signature();
         self.key.verify(&message, &signed_message).is_ok()
     }
@@ -38,6 +38,6 @@ use std::fmt;
 
 impl fmt::Display for PublicKey {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "[Public Key]: {}", self.as_hex())
+        write!(f, "[Public Key] {}", self.as_hex())
     }
 }

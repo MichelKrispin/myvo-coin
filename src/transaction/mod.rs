@@ -24,14 +24,13 @@ pub struct Transaction {
 }
 
 impl Transaction {
+    /// Create a new transaction with the inputs, the outputs and the change.
+    /// Doesn't check for correctness of the transaction!
     pub fn new(
         inputs: Vec<input::Input>,
         output: output::Output,
         change: Option<output::Output>,
     ) -> Self {
-        // TODO: Validate whether the amount of output coins
-        // is the same as the sum of input coins.
-
         // TODO: Don't fake that hash.
         // A fake hash
         let id_hash = hash::Hash::create(String::from("serialization of the previous stuff"));
@@ -44,8 +43,21 @@ impl Transaction {
         }
     }
 
+    pub fn get_inputs(&self) -> &Vec<input::Input> {
+        &self.inputs
+    }
+
     pub fn get_output(&self) -> &output::Output {
         &self.output
+    }
+
+    /// Returns the summed amount of the output and change.
+    pub fn get_amount(&self) -> u64 {
+        self.output.get_amount()
+            + match &self.change {
+                Some(change) => change.get_amount(),
+                None => 0,
+            }
     }
 }
 

@@ -2,6 +2,7 @@ use super::get_hash;
 use super::transaction;
 
 use crate::crypto::hash;
+use crate::transaction::output;
 
 /// The very first block in the chain.
 /// As it has no predecessor, it looks a little bit different.
@@ -23,6 +24,10 @@ impl FirstBlock {
             creation: transaction::creation::Creation::new(first_owner_hash),
             id_hash: hash::Hash::create(String::from("the very first hash")),
         }
+    }
+
+    pub fn get_output(&self) -> &output::Output {
+        &self.creation.get_output()
     }
 }
 

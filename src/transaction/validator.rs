@@ -20,12 +20,26 @@ impl Validator {
             public_key: keypair.public_key(),
         }
     }
+
+    /// Get the signature of this validator.
+    pub fn get_signature(&self) -> &signature::Signature {
+        &self.signature
+    }
+
+    /// Get the public key of this validator.
+    pub fn get_public_key(&self) -> &public_key::PublicKey {
+        &self.public_key
+    }
 }
 
 use std::fmt;
 
 impl fmt::Display for Validator {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "[Validator] {} : {}", self.signature, self.public_key,)
+        write!(
+            f,
+            "[Validator]\n   {}\n   {}",
+            self.signature, self.public_key,
+        )
     }
 }

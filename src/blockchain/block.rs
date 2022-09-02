@@ -2,6 +2,8 @@ use super::get_hash;
 use super::transaction;
 use crate::crypto::hash;
 
+use std::time;
+
 /// A block in the blockchain that contains
 /// multiple transactions, the hash of the last
 /// block in the chain, one creation transaction
@@ -37,7 +39,6 @@ impl Block {
         creation_owner: hash::Hash,
         transactions: Vec<transaction::Transaction>,
     ) -> Self {
-        // TODO: Actually hash that stuff and adjust the nonce
         Self {
             last_id_hash,
             creation: transaction::creation::Creation::new(creation_owner),
@@ -52,7 +53,7 @@ impl Block {
     ///
     /// # Arguments
     /// * `transaction` - A new transaction that is hopefully valid.
-    pub fn add_transactions(&mut self, transaction: transaction::Transaction) {
+    pub fn add_transaction(&mut self, transaction: transaction::Transaction) {
         self.transactions.push(transaction);
     }
 
@@ -62,12 +63,50 @@ impl Block {
     }
 
     /// Compute the hash of this block.
-    /// Return true, if the hash applies to the validation rules.
-    pub fn compute_hash(&mut self) -> bool {
-        // TODO: Actually... Compute the hash and adjust the nonce
-        self.nonce += 1;
-        self.id_hash = hash::Hash::create(String::from("a new hash"));
-        false
+    /// Return true, if the hash has `leading_zeros` zeros in front.
+    pub fn compute_hash(&mut self, leading_zeros: usize) {
+        if leading_zeros > hash::HASH_LENGTH {
+            panic!("The leading zeros cannot be greater than the hash length!");
+        }
+
+        let begin = time::Instant::now();
+        // TODO: Actually... Compute the real hash and adjust the nonce
+        let mut loop_counter = 0;
+        loop {
+            print!("{}\r", loop_counter);
+
+            // Check if the leading zeros match
+            let mut leading_zeros_match = true;
+            let hash_bytes = self.id_hash.as_bytes();
+            for i in 0..leading_zeros {
+                if 0 != match hash_bytes.get(i) {
+                    Some(byte) => *byte,
+                    None => 0,
+                } {
+                    leading_zeros_match = false;
+                    break;
+                }
+            }
+
+            // If the hash starts with the right amount of zeros, then break.
+            if leading_zeros_match {
+                break;
+            }
+
+            // Otherwise adjust the nonce and recompute the hash.
+            self.nonce += 1;
+            let bytes = self.nonce.to_be_bytes();
+            self.id_hash = hash::Hash::create(bytes);
+
+            loop_counter += 1;
+        }
+
+        let elapsed_time = begin.elapsed();
+        println!("{} tries in {}ms", loop_counter, elapsed_time.as_millis());
+    }
+
+    pub fn get_hash(&self) -> &hash::Hash {
+        &self.id_hash
     }
 }
 

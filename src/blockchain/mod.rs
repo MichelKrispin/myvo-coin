@@ -3,7 +3,10 @@ pub mod first_block;
 pub mod get_hash;
 
 use super::transaction;
-use crate::crypto::hash;
+use crate::{
+    crypto::hash,
+    transaction::{input, output},
+};
 // use get_hash::GetHash;
 
 /// A blockchain containing a list of blocks.
@@ -35,26 +38,91 @@ impl BlockChain {
     pub fn add_block(&mut self, block: block::Block) -> bool {
         // This is the place for all error checking stuff!
 
-        // TODO: First check if all inputs belong to existing outputs
-        //       and that the summed amount is correct
-        //       and that the validator is correct
+        // Check each transaction inside this block
+        for transaction in block.get_transactions() {
+            let mut input_amount: u64 = 0;
+            let transaction_amount = transaction.get_output().get_amount();
+
+            // Check each input for correctness
+            for input in transaction.get_inputs() {
+                // Check if the output that this input refers to actually exist
+                let output_reference_hash = input.get_output_reference();
+                let output = match self.get_output(*output_reference_hash) {
+                    Some(output) => output,
+                    None => panic!("Output referred to by an input doesn't exist!"),
+                };
+                // Sum the amount of the inputs together
+                input_amount += output.get_amount();
+
+                // Check if the validator is actually correct (proof ownership)
+                // For this, the validators public key has to be hashed and
+                // then has to equal the outputs hash
+                let validator = input.get_validator();
+                let validator_public_key = validator.get_public_key();
+                let validator_public_key_hash = hash::Hash::create(validator_public_key.as_hex());
+                if validator_public_key_hash.as_hex() != output.get_owner_hash().as_hex() {
+                    panic!("The output is not owned by this validator (hashed keys don't equal)");
+                }
+
+                // Also, the signature had to be made with the corresponding private key
+                let message = b"alice"; // TODO: Change this!!!
+                if !validator_public_key.check(message, validator.get_signature()) {
+                    panic!("The output is not owned by this validator (the signature isn't valid)");
+                }
+            }
+
+            // Check if the summed amount is correct
+            if input_amount != transaction_amount {
+                panic!("Inputs amount doesn't equal the transaction amount");
+            }
+        }
+
+        // And finally check whether the hash is valid\
+        let block_hash = block.get_hash();
+        let hash_bytes = block_hash.as_bytes();
+        for i in 0..2 {
+            if hash_bytes[i] != 0 {
+                panic!(
+                    "The blocks hash doesn't start with 2 zeros:\n[{}, {}, ...\n",
+                    hash_bytes[0], hash_bytes[1]
+                );
+            }
+        }
+
+        println!(
+            "The block starts with [{}, {}, {}, {}, ...\n",
+            hash_bytes[0], hash_bytes[1], hash_bytes[2], hash_bytes[3]
+        );
+
+        // And then do the hash and compare that to the one that was created
+        if block_hash.as_hex() != block.get_hash().as_hex() {
+            panic!("The blocks hash was manipulated!");
+        }
 
         self.blocks.push(block);
         true
     }
 
-    /// Searches through all outputs in the blockchain and
-    /// returns true if found, else false.
-    fn get_output(&self, output_hash: hash::Hash) -> bool {
+    /// Searches through all outputs in the blockchain
+    fn get_output(&self, output_hash: hash::Hash) -> Option<&output::Output> {
+        // First check the first blocks output
+        let transaction_output = self.first_block.get_output();
+        let owner_hash = transaction_output.get_owner_hash();
+        if owner_hash.as_hex() == output_hash.as_hex() {
+            return Some(transaction_output);
+        }
+
+        // Then check all the other blocks
         for block in &self.blocks {
             for transaction in block.get_transactions() {
-                let owner_hash = transaction.get_output().get_owner_hash();
+                let transaction_output = transaction.get_output();
+                let owner_hash = transaction_output.get_owner_hash();
                 if owner_hash.as_hex() == output_hash.as_hex() {
-                    return true;
+                    return Some(transaction_output);
                 }
             }
         }
-        false
+        None
     }
 }
 

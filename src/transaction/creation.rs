@@ -27,6 +27,10 @@ impl Creation {
             id_hash: hash::Hash::create(String::from("the creation hash")),
         }
     }
+
+    pub fn get_output(&self) -> &output::Output {
+        &self.output
+    }
 }
 
 use std::fmt;
