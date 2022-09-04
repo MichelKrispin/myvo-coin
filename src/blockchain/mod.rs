@@ -5,6 +5,8 @@ pub mod get_hash;
 use super::transaction;
 use crate::{crypto::hash, transaction::output};
 
+const LEADING_ZEROS: usize = 1;
+
 /// A blockchain containing a list of blocks.
 pub struct BlockChain {
     /// The very first block
@@ -76,11 +78,11 @@ impl BlockChain {
         // And finally check whether the hash is valid\
         let block_hash = block.get_hash();
         let hash_bytes = block_hash.as_bytes();
-        for i in 0..2 {
+        for i in 0..LEADING_ZEROS {
             if hash_bytes[i] != 0 {
                 panic!(
-                    "The blocks hash doesn't start with 2 zeros:\n[{}, {}, ...\n",
-                    hash_bytes[0], hash_bytes[1]
+                    "The blocks hash doesn't start with {} zeros:\n[{}, {}, ...\n",
+                    LEADING_ZEROS, hash_bytes[0], hash_bytes[1]
                 );
             }
         }

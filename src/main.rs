@@ -6,9 +6,29 @@ mod dummy;
 
 use blockchain::get_hash::GetHash;
 
-fn small_chain() {
-    // Create the keypair for Alice
+const ALICE1_FILE: &str = "keys/alice1.keypair";
+const BOB_FILE: &str = "keys/bob.keypair";
+const ALICE2_FILE: &str = "keys/alice2.keypair";
+
+const LEADING_ZEROS: usize = 1;
+
+fn generate_keys() {
+    // Generate
     let alice = crypto::keypair::Keypair::new();
+    // Save
+    alice.save(ALICE1_FILE.to_string());
+
+    let bob = crypto::keypair::Keypair::new();
+    bob.save(BOB_FILE.to_string());
+
+    let alice = crypto::keypair::Keypair::new();
+    alice.save(ALICE2_FILE.to_string());
+}
+
+fn small_chain() {
+    // Load the keypair for Alice
+    // let alice = crypto::keypair::Keypair::new();
+    let alice = crypto::keypair::Keypair::load(ALICE1_FILE.to_string());
     let alice_public_hash = crypto::hash::Hash::create(alice.public_key().as_hex());
     println!("Alice pk:   {}", alice.public_key());
     println!("Alice hash: {}", alice_public_hash);
@@ -19,7 +39,8 @@ fn small_chain() {
     // -----
 
     // Create the keypair for Bob
-    let bob = crypto::keypair::Keypair::new();
+    // let bob = crypto::keypair::Keypair::new();
+    let bob = crypto::keypair::Keypair::load(BOB_FILE.to_string());
     let bob_public_hash = crypto::hash::Hash::create(bob.public_key().as_hex());
     println!("Bob   hash: {}", bob_public_hash);
 
@@ -41,7 +62,8 @@ fn small_chain() {
 
     // Then create a Creation for Alice, because she computes the block
     // For that alice gets a new keypair, because the old one was already used.
-    let alice = crypto::keypair::Keypair::new();
+    // let alice = crypto::keypair::Keypair::new();
+    let alice = crypto::keypair::Keypair::load(ALICE2_FILE.to_string());
     let alice_public_hash = crypto::hash::Hash::create(alice.public_key().as_hex());
     println!("Alice hash: {}", alice_public_hash);
 
@@ -53,7 +75,7 @@ fn small_chain() {
     };
 
     // And Compute the correct hash
-    block.compute_hash(2);
+    block.compute_hash(LEADING_ZEROS);
 
     println!("");
     let mut blockchain = blockchain::BlockChain::create(first_block);
@@ -63,6 +85,10 @@ fn small_chain() {
 }
 
 fn main() {
+    if false {
+        generate_keys();
+    }
+
     if true {
         small_chain();
     }

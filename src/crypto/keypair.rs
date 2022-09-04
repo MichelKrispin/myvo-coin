@@ -4,6 +4,9 @@ use super::signature;
 use ed25519_dalek;
 use ed25519_dalek::Signer;
 use rand::rngs;
+use sha3::digest::crypto_common::KeyInit;
+
+use std::fs;
 
 pub struct Keypair {
     keypair: ed25519_dalek::Keypair,
@@ -11,9 +14,35 @@ pub struct Keypair {
 }
 
 impl Keypair {
+    /// Generate a new random keypair.
     pub fn new() -> Self {
         let mut csprng = rngs::OsRng {};
         let keypair = ed25519_dalek::Keypair::generate(&mut csprng);
+        let public_key = public_key::PublicKey::create_from(keypair.public);
+        Self {
+            keypair,
+            public_key,
+        }
+    }
+
+    /// Load a keypair from the given file.
+    /// Should have been stored previously with
+    /// the `save` function.
+    pub fn load(filename: String) -> Self {
+        let data = fs::read(filename).expect("Could not open keypair file");
+        Keypair::from_bytes(&data)
+    }
+
+    /// Saves this keypair to a file as a raw byte string.
+    pub fn save(&self, filename: String) {
+        let data = self.keypair.to_bytes();
+        fs::write(filename, data).expect("Unable to write keypair file");
+    }
+
+    /// Wrapper for creating a keypair from the given bytes.
+    fn from_bytes(bytes: &Vec<u8>) -> Self {
+        let keypair =
+            ed25519_dalek::Keypair::from_bytes(bytes).expect("Cannot create keypair from bytes");
         let public_key = public_key::PublicKey::create_from(keypair.public);
         Self {
             keypair,
