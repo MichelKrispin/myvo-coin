@@ -1,4 +1,5 @@
 mod blockchain;
+mod cashbook;
 mod crypto;
 mod transaction;
 
@@ -6,9 +7,11 @@ mod dummy;
 
 use blockchain::get_hash::GetHash;
 
-const ALICE1_FILE: &str = "keys/alice1.keypair";
-const BOB_FILE: &str = "keys/bob.keypair";
-const ALICE2_FILE: &str = "keys/alice2.keypair";
+const ALICE1_FILE: &str =
+    "keys/98b89be19e0b64aac6ce046c659303afc19e5dc79a58339115d8c782c2b5a946.pk";
+const BOB_FILE: &str = "keys/634a05f117da18c0b0803290f0c5980814bd3886969a4a561d60e4d35749b863.pk";
+const ALICE2_FILE: &str =
+    "keys/d33d200d86250f3108dd36e60919203214431f378a6d3eb9c1106dc27f98e8cc.pk";
 
 const LEADING_ZEROS: usize = 1;
 
@@ -16,16 +19,16 @@ fn generate_keys() {
     // Generate
     let alice = crypto::keypair::Keypair::new();
     // Save
-    alice.save(ALICE1_FILE.to_string());
+    alice.save(alice.public_key().as_hex() + ".pk");
 
     let bob = crypto::keypair::Keypair::new();
-    bob.save(BOB_FILE.to_string());
+    bob.save(bob.public_key().as_hex() + ".pk");
 
     let alice = crypto::keypair::Keypair::new();
-    alice.save(ALICE2_FILE.to_string());
+    alice.save(alice.public_key().as_hex() + ".pk");
 }
 
-fn small_chain() {
+fn small_chain() -> blockchain::BlockChain {
     // Load the keypair for Alice
     // let alice = crypto::keypair::Keypair::new();
     let alice = crypto::keypair::Keypair::load(ALICE1_FILE.to_string());
@@ -81,16 +84,25 @@ fn small_chain() {
     let mut blockchain = blockchain::BlockChain::create(first_block);
     blockchain.add_block(block);
     println!("{}", blockchain);
-    //println!("\n{}\n", first_block);
+    blockchain
 }
 
+fn cash_book() {
+    let blockchain = small_chain();
+    let cash_book = cashbook::CashBook::open(String::from("keys"), blockchain);
+    println!("{}", cash_book);
+}
 fn main() {
     if false {
         generate_keys();
     }
 
+    if false {
+        let _ = small_chain();
+    }
+
     if true {
-        small_chain();
+        cash_book();
     }
 
     if false {

@@ -4,7 +4,6 @@ use super::signature;
 use ed25519_dalek;
 use ed25519_dalek::Signer;
 use rand::rngs;
-use sha3::digest::crypto_common::KeyInit;
 
 use std::fs;
 
