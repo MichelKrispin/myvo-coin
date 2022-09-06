@@ -19,6 +19,10 @@ impl Wallet {
         }
     }
 
+    pub fn get_keypairs(&self) -> &Vec<keypair::Keypair> {
+        &self.keypairs
+    }
+
     /// Load up all .pub keypairs inside of the `wallet_folder`.
     fn load(wallet_folder: &String) -> Vec<keypair::Keypair> {
         let mut keypairs = vec![];

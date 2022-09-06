@@ -3,6 +3,7 @@ mod receipt;
 mod wallet;
 
 use crate::blockchain;
+use crate::crypto;
 
 pub struct CashBook {
     wallet: wallet::Wallet,
@@ -18,11 +19,33 @@ impl CashBook {
     }
 
     /// Return all the outputs that belong to
-    /// the public keys in the wallet.
+    /// the public keys in the wallet and that haven't
+    /// been used.
     pub fn get_balance(&self) -> balance::Balance {
-        // TODO: Go through the complete blockchain and search
-        //       for outputs that belong to the wallets keys
-        balance::Balance::empty()
+        // Go through the complete blockchain and search
+        // for outputs that belong to the wallets keys
+        let mut receipts: Vec<receipt::Receipt> = vec![];
+        for keypair in self.wallet.get_keypairs() {
+            // First hash the public key
+            let public_key_hash = {
+                let public_key = keypair.public_key();
+                crypto::hash::Hash::create(public_key.as_hex())
+            };
+
+            // Then search for the transaction output
+            // and panic if it doesn't exist
+            let output = self
+                .blockchain
+                .get_output(public_key_hash)
+                .expect("Could not find the hash in the blockchain");
+            // Reload the keypair for the receipt
+            let copied_keypair =
+                crypto::keypair::Keypair::load(keypair.public_key().as_hex() + ".pk");
+            let receipt = receipt::Receipt::create(output.get_amount(), copied_keypair);
+            // Then save it
+            receipts.push(receipt);
+        }
+        balance::Balance::create(receipts)
     }
 }
 

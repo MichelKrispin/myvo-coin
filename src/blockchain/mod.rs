@@ -103,7 +103,7 @@ impl BlockChain {
     }
 
     /// Searches through all outputs in the blockchain
-    fn get_output(&self, output_hash: hash::Hash) -> Option<&output::Output> {
+    pub fn get_output(&self, output_hash: hash::Hash) -> Option<&output::Output> {
         // First check the first blocks output
         let transaction_output = self.first_block.get_output();
         let owner_hash = transaction_output.get_owner_hash();
