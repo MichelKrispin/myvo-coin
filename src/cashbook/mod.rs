@@ -31,16 +31,20 @@ impl CashBook {
                 let public_key = keypair.public_key();
                 crypto::hash::Hash::create(public_key.as_hex())
             };
-
             // Then search for the transaction output
             // and panic if it doesn't exist
             let output = self
                 .blockchain
                 .get_output(public_key_hash)
                 .expect("Could not find the hash in the blockchain");
+            // TODO: This sometimes panics
+
+            // TODO: Only append it if it is still valid
             // Reload the keypair for the receipt
-            let copied_keypair =
-                crypto::keypair::Keypair::load(keypair.public_key().as_hex() + ".pk");
+            let copied_keypair = {
+                let keypair_path = format!("keys/{}.pk", keypair.public_key().as_hex());
+                crypto::keypair::Keypair::load(keypair_path)
+            };
             let receipt = receipt::Receipt::create(output.get_amount(), copied_keypair);
             // Then save it
             receipts.push(receipt);
@@ -53,10 +57,11 @@ use std::fmt;
 
 impl fmt::Display for CashBook {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let balance = self.get_balance();
         write!(
             f,
-            ">>> [CashBook] <<<\n\n{}\n === \n\n{}<<< [CashBook] >>>",
-            self.wallet, self.blockchain
+            ">>> [CashBook] <<<\n\n{}\n ===\n{}\n<<< [CashBook] >>>",
+            self.wallet, balance
         )
     }
 }

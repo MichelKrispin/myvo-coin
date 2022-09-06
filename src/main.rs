@@ -8,10 +8,10 @@ mod dummy;
 use blockchain::get_hash::GetHash;
 
 const ALICE1_FILE: &str =
-    "keys/98b89be19e0b64aac6ce046c659303afc19e5dc79a58339115d8c782c2b5a946.pk";
-const BOB_FILE: &str = "keys/634a05f117da18c0b0803290f0c5980814bd3886969a4a561d60e4d35749b863.pk";
+    "keys/028f9082911a0e1b7d3c3dc86ba46c421004474c68f0b11b462ae361be82627b.pk";
+const BOB_FILE: &str = "keys/211c92696588cb84e605be62630fb43ea6b412aaa202e1fb0a89b027a9f8a3eb.pk";
 const ALICE2_FILE: &str =
-    "keys/d33d200d86250f3108dd36e60919203214431f378a6d3eb9c1106dc27f98e8cc.pk";
+    "keys/c5c947470194421f99e7f3ed5d99b11cbec158a908526236dd07165532544b63.pk";
 
 const LEADING_ZEROS: usize = 1;
 
@@ -92,7 +92,11 @@ fn cash_book() {
     let cash_book = cashbook::CashBook::open(String::from("keys"), blockchain);
     println!("{}", cash_book);
 }
+
+use std::env;
 fn main() {
+    env::set_var("RUST_BACKTRACE", "1");
+
     if false {
         generate_keys();
     }
