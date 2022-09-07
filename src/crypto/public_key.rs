@@ -1,5 +1,7 @@
 use super::signature;
 
+use serde;
+
 use ed25519_dalek;
 use ed25519_dalek::Verifier;
 use hex;
@@ -7,7 +9,7 @@ use hex;
 pub const PUBLIC_KEY_LENGTH: usize = ed25519_dalek::PUBLIC_KEY_LENGTH;
 
 /// A wrapper for a public key implementation.
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, serde::Serialize, serde::Deserialize)]
 pub struct PublicKey {
     key: ed25519_dalek::PublicKey,
 }

@@ -37,7 +37,10 @@ fn small_chain() -> blockchain::BlockChain {
     println!("Alice hash: {}", alice_public_hash);
 
     // First block
-    let first_block = blockchain::first_block::FirstBlock::new(alice_public_hash);
+    let first_block = {
+        let cloned_hash = crypto::hash::Hash::clone(&alice_public_hash);
+        blockchain::first_block::FirstBlock::new(cloned_hash)
+    };
 
     // -----
 
@@ -53,7 +56,8 @@ fn small_chain() -> blockchain::BlockChain {
         // Connect the input to Alice creation coin
         let alice_input = {
             let validator = transaction::validator::Validator::create(alice, b"alice");
-            transaction::input::Input::create(alice_public_hash, validator)
+            let cloned_hash = crypto::hash::Hash::clone(&alice_public_hash);
+            transaction::input::Input::create(cloned_hash, validator)
         };
         // That is the only input right now
         let inputs = vec![alice_input];
@@ -91,7 +95,7 @@ fn small_chain() -> blockchain::BlockChain {
 
 fn cash_book() {
     // Create a small chain
-    let blockchain = small_chain();
+    let blockchain = blockchain::BlockChain::load("blockchain.data");
 
     // Open up a cash book with keys and the created chain
     let cash_book = cashbook::CashBook::open(String::from("keys"), blockchain);
@@ -107,7 +111,8 @@ fn main() {
     }
 
     if false {
-        let _ = small_chain();
+        let chain = small_chain();
+        chain.save("blockchain.data");
     }
 
     if true {

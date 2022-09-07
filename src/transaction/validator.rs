@@ -2,10 +2,13 @@ use crate::crypto::{keypair, public_key, signature};
 
 use std::convert::TryInto;
 
+use serde;
+
 /// The validator length in bytes.
 pub const VALIDATOR_LENGTH: usize = signature::SIGNATURE_LENGTH + public_key::PUBLIC_KEY_LENGTH;
 
 /// The validator to proof ownership of a given output.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Validator {
     /// The signature that was made with the private key that
     /// corresponds to the public key.

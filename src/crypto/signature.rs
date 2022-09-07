@@ -1,8 +1,11 @@
 use ed25519_dalek;
 
+use serde;
+
 pub const SIGNATURE_LENGTH: usize = ed25519_dalek::SIGNATURE_LENGTH;
 
 /// A very small signature wrapper to have a uniform desing.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Signature {
     /// The actual signature struct that this struct is wrapping up.
     signature: ed25519_dalek::Signature,

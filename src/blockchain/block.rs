@@ -4,11 +4,14 @@ use crate::crypto::hash;
 
 use std::time;
 
+use serde;
+
 /// A block in the blockchain that contains
 /// multiple transactions, the hash of the last
 /// block in the chain, one creation transaction
 /// as the incentive for the block
 /// and a new hash of this complete block.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Block {
     /// The hash of the last block.
     last_id_hash: hash::Hash,
@@ -153,7 +156,7 @@ impl Block {
 
 impl get_hash::GetHash for Block {
     fn hash(&self) -> hash::Hash {
-        self.id_hash
+        hash::Hash::clone(&self.id_hash)
     }
 }
 

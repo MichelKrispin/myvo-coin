@@ -5,10 +5,13 @@ pub mod validator;
 
 use crate::crypto::hash;
 
+use serde;
+
 /// A transaction that maps one or more inputs to one output
 /// and one optional change output.
 /// It is uniquely defined by the hash of all of its input values
 /// serialized into a long list of bytes.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Transaction {
     /// A list of inputs that refer from previous transactions output.
     pub inputs: Vec<input::Input>,

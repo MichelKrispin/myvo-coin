@@ -2,11 +2,14 @@ use super::validator;
 
 use crate::crypto::hash;
 
+use serde;
+
 const INPUT_LENGTH: usize = hash::HASH_LENGTH + validator::VALIDATOR_LENGTH;
 
 /// The input of a transaction that references the output of
 /// another transaction and has to provide some validator
 /// to proof ownership of that output.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Input {
     // TODO: Probably better if the correct block is also known.
     /// The hash that corresponds to the referred output.

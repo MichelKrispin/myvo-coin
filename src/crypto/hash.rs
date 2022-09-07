@@ -6,10 +6,10 @@ pub const HASH_LENGTH: usize = 64;
 
 /// A simple wrapper class around hashes.
 /// Provides utility functions to generate hashes from values.
-#[derive(Copy, Clone)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Hash {
     /// The hash itself with the length corresponding to the used algorithm.
-    hash: [u8; HASH_LENGTH],
+    hash: Vec<u8>, // hash: [u8; HASH_LENGTH],
 }
 
 impl Hash {
@@ -19,11 +19,13 @@ impl Hash {
     ///
     /// * `to_hash` - The string which will be hashed.
     pub fn create(to_hash: impl AsRef<[u8]>) -> Self {
-        let mut hasher = Sha3_512::new();
-        hasher.update(to_hash);
-        Self {
-            hash: hasher.finalize().into(),
-        }
+        let hash: Vec<u8> = Sha3_512::digest(to_hash).to_vec();
+        Self { hash }
+    }
+
+    pub fn clone(other: &Hash) -> Self {
+        let hash: Vec<u8> = other.hash.clone();
+        Self { hash }
     }
 
     /// View the hash as a hex value.
@@ -32,7 +34,7 @@ impl Hash {
     }
 
     // Get the bytes of this hash.
-    pub fn as_bytes(&self) -> &[u8; HASH_LENGTH] {
+    pub fn as_bytes(&self) -> &Vec<u8> {
         &self.hash
     }
 }

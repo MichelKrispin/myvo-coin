@@ -33,7 +33,7 @@ impl CashBook {
             };
             // Then search for the transaction output
             // and continue if it has already been used
-            let output = match self.blockchain.get_valid_output(public_key_hash) {
+            let output = match self.blockchain.get_valid_output(&public_key_hash) {
                 Some(output) => output,
                 None => continue,
             };

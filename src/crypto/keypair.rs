@@ -1,12 +1,15 @@
 use super::public_key;
 use super::signature;
 
+use serde;
+
 use ed25519_dalek;
 use ed25519_dalek::Signer;
 use rand::rngs;
 
 use std::fs;
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Keypair {
     keypair: ed25519_dalek::Keypair,
     public_key: public_key::PublicKey,

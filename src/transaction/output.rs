@@ -1,11 +1,14 @@
 use crate::crypto::hash;
 
+use serde;
+
 pub const OUTPUT_LENGTH: usize = 8 + hash::HASH_LENGTH;
 
 /// Represents the output of a transactions
 /// with the amount of coins that belongs
 /// to this output and a hash of the public key
 /// that identifies the owner uniquely.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Output {
     /// The amount of coins that belong to this output.
     amount: u64,

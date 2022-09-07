@@ -1,13 +1,16 @@
 use super::output;
 use crate::crypto::hash;
 
+use serde;
+
 /// The default number of coins that will be created
 /// when a new block is added to the chain.
 const DEFAULT_CREATION_AMOUNT: u64 = 1;
-const CREATION_LENGTH: usize = output::OUTPUT_LENGTH + hash::HASH_LENGTH;
+pub const CREATION_LENGTH: usize = output::OUTPUT_LENGTH + hash::HASH_LENGTH;
 
 /// A creation block that should be included
 /// at the top of a block.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Creation {
     /// The new owner of the creation's block new coins.
     output: output::Output,

@@ -5,9 +5,14 @@ pub mod get_hash;
 use super::transaction;
 use crate::{crypto::hash, transaction::output};
 
+use bincode;
+use serde;
+use std::fs;
+
 const LEADING_ZEROS: usize = 1;
 
 /// A blockchain containing a list of blocks.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct BlockChain {
     /// The very first block
     first_block: first_block::FirstBlock,
@@ -29,18 +34,22 @@ impl BlockChain {
         }
     }
 
-    /*
     /// Loads a saved blockchain from disk.
-    pub fn load() -> Self {
-        Self {}
-    }
-    */
-    /// Saves this blockchain to disk.
-    pub fn save(&self) {
-        // TODO: FirstBlock has to have .as_bytes/from_bytes
-        //       and Block has to have .as_bytes/from_bytes
+    pub fn load(filename: &str) -> Self {
+        let bytes = fs::read(filename).expect("Could not open blockchain file");
 
-        // TODO: Use that to create a large binary file and save it
+        let blockchain =
+            bincode::deserialize(&bytes).expect("Could not get a blockchain from the file");
+
+        blockchain
+    }
+
+    /// Saves this blockchain to disk.
+    pub fn save(&self, filename: &str) {
+        let bytes = bincode::serialize(self).expect("Error with serializing the blockchain");
+
+        // Write it to file
+        fs::write(filename, bytes).expect("Unable to write blockchain file");
     }
 
     /// This adds the block to the blockhain.
@@ -60,7 +69,7 @@ impl BlockChain {
                 // Check if the output that this input refers to actually exist and wasn't spended
                 let output_reference_hash = input.get_output_reference();
                 let output = self
-                    .get_valid_output(*output_reference_hash)
+                    .get_valid_output(output_reference_hash)
                     .expect("Output referred to by an input has already been used!");
                 // Sum the amount of the inputs together
                 input_amount += output.get_amount();
@@ -118,7 +127,7 @@ impl BlockChain {
     /// Search through all blocks in the output and return the
     /// output if it wasn't already used.
     /// Panics, if the output couldn't been found.
-    pub fn get_valid_output(&self, output_hash: hash::Hash) -> Option<&output::Output> {
+    pub fn get_valid_output(&self, output_hash: &hash::Hash) -> Option<&output::Output> {
         // First try to get it
         let output = self.get_output(output_hash);
 
@@ -140,7 +149,7 @@ impl BlockChain {
     /// Searches through all outputs in the blockchain
     /// and return the output if it exists.
     /// Otherwise it panics!
-    fn get_output(&self, output_hash: hash::Hash) -> &output::Output {
+    fn get_output(&self, output_hash: &hash::Hash) -> &output::Output {
         // First check the first blocks output
         let transaction_output = self.first_block.get_output();
         let owner_hash = transaction_output.get_owner_hash();

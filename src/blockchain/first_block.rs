@@ -1,11 +1,14 @@
 use super::get_hash;
 use super::transaction;
 
+use serde;
+
 use crate::crypto::hash;
 use crate::transaction::output;
 
 /// The very first block in the chain.
 /// As it has no predecessor, it looks a little bit different.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct FirstBlock {
     /// The first creation to get some coins.
     creation: transaction::creation::Creation,
@@ -29,17 +32,11 @@ impl FirstBlock {
     pub fn get_output(&self) -> &output::Output {
         &self.creation.get_output()
     }
-
-    /*
-    // TODO: Implement this
-    pub fn as_bytes(&self) -> [u8; FIRST_BLOCK_LENGTH] {
-    }
-    */
 }
 
 impl get_hash::GetHash for FirstBlock {
     fn hash(&self) -> hash::Hash {
-        self.id_hash
+        hash::Hash::clone(&self.id_hash)
     }
 }
 
