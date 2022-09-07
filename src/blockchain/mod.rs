@@ -29,6 +29,20 @@ impl BlockChain {
         }
     }
 
+    /*
+    /// Loads a saved blockchain from disk.
+    pub fn load() -> Self {
+        Self {}
+    }
+    */
+    /// Saves this blockchain to disk.
+    pub fn save(&self) {
+        // TODO: FirstBlock has to have .as_bytes/from_bytes
+        //       and Block has to have .as_bytes/from_bytes
+
+        // TODO: Use that to create a large binary file and save it
+    }
+
     /// This adds the block to the blockhain.
     /// Includes all the error checking and validation code.
     /// Checks for input validator correctness

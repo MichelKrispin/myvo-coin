@@ -90,7 +90,10 @@ fn small_chain() -> blockchain::BlockChain {
 }
 
 fn cash_book() {
+    // Create a small chain
     let blockchain = small_chain();
+
+    // Open up a cash book with keys and the created chain
     let cash_book = cashbook::CashBook::open(String::from("keys"), blockchain);
     println!("\n\n{}", cash_book);
 }

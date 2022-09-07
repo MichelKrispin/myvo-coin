@@ -29,6 +29,12 @@ impl FirstBlock {
     pub fn get_output(&self) -> &output::Output {
         &self.creation.get_output()
     }
+
+    /*
+    // TODO: Implement this
+    pub fn as_bytes(&self) -> [u8; FIRST_BLOCK_LENGTH] {
+    }
+    */
 }
 
 impl get_hash::GetHash for FirstBlock {
