@@ -57,9 +57,14 @@ impl Block {
         self.transactions.push(transaction);
     }
 
-    /// Get the transaction.
+    /// Get the transactions.
+    /// Note, that this does *not* include the creation transaction!
     pub fn get_transactions(&self) -> &Vec<transaction::Transaction> {
         &self.transactions
+    }
+
+    pub fn get_creation(&self) -> &transaction::creation::Creation {
+        &self.creation
     }
 
     pub fn as_bytes(&self, with_hash: bool) -> Vec<u8> {

@@ -32,14 +32,12 @@ impl CashBook {
                 crypto::hash::Hash::create(public_key.as_hex())
             };
             // Then search for the transaction output
-            // and panic if it doesn't exist
-            let output = self
-                .blockchain
-                .get_output(public_key_hash)
-                .expect("Could not find the hash in the blockchain");
-            // TODO: This sometimes panics
+            // and continue if it has already been used
+            let output = match self.blockchain.get_valid_output(public_key_hash) {
+                Some(output) => output,
+                None => continue,
+            };
 
-            // TODO: Only append it if it is still valid
             // Reload the keypair for the receipt
             let copied_keypair = {
                 let keypair_path = format!("keys/{}.pk", keypair.public_key().as_hex());

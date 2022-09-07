@@ -38,7 +38,7 @@ impl fmt::Display for Balance {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "[Balance]: {}\n", self.get_amount())?;
         for receipt in &self.receipts {
-            write!(f, "{}", receipt)?;
+            write!(f, " -> {}", receipt)?;
         }
         Ok(())
     }

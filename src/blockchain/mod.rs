@@ -43,12 +43,11 @@ impl BlockChain {
 
             // Check each input for correctness
             for input in transaction.get_inputs() {
-                // Check if the output that this input refers to actually exist
+                // Check if the output that this input refers to actually exist and wasn't spended
                 let output_reference_hash = input.get_output_reference();
-                let output = match self.get_output(*output_reference_hash) {
-                    Some(output) => output,
-                    None => panic!("Output referred to by an input doesn't exist!"),
-                };
+                let output = self
+                    .get_valid_output(*output_reference_hash)
+                    .expect("Output referred to by an input has already been used!");
                 // Sum the amount of the inputs together
                 input_amount += output.get_amount();
 
@@ -102,26 +101,61 @@ impl BlockChain {
         true
     }
 
+    /// Search through all blocks in the output and return the
+    /// output if it wasn't already used.
+    /// Panics, if the output couldn't been found.
+    pub fn get_valid_output(&self, output_hash: hash::Hash) -> Option<&output::Output> {
+        // First try to get it
+        let output = self.get_output(output_hash);
+
+        // Then search through all blocks and see if it has already been used
+        for block in &self.blocks {
+            for transaction in block.get_transactions() {
+                for input in transaction.get_inputs() {
+                    let reference_hash = input.get_output_reference();
+                    if reference_hash.as_hex() == output_hash.as_hex() {
+                        return None;
+                    }
+                }
+            }
+        }
+
+        return Some(output);
+    }
+
     /// Searches through all outputs in the blockchain
-    pub fn get_output(&self, output_hash: hash::Hash) -> Option<&output::Output> {
+    /// and return the output if it exists.
+    /// Otherwise it panics!
+    fn get_output(&self, output_hash: hash::Hash) -> &output::Output {
         // First check the first blocks output
         let transaction_output = self.first_block.get_output();
         let owner_hash = transaction_output.get_owner_hash();
         if owner_hash.as_hex() == output_hash.as_hex() {
-            return Some(transaction_output);
+            return transaction_output;
         }
 
         // Then check all the other blocks
         for block in &self.blocks {
+            // Check the creation transactions
+            {
+                let creation = block.get_creation();
+                let creation_output = creation.get_output();
+                let creation_hash = creation_output.get_owner_hash();
+                if creation_hash.as_hex() == output_hash.as_hex() {
+                    return transaction_output;
+                }
+            }
+
+            // And then all other transactions
             for transaction in block.get_transactions() {
                 let transaction_output = transaction.get_output();
                 let owner_hash = transaction_output.get_owner_hash();
                 if owner_hash.as_hex() == output_hash.as_hex() {
-                    return Some(transaction_output);
+                    return transaction_output;
                 }
             }
         }
-        None
+        panic!("Could not find the output in the blockchain");
     }
 }
 
