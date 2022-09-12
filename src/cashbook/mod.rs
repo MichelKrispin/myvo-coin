@@ -25,6 +25,7 @@ impl CashBook {
         // Go through the complete blockchain and search
         // for outputs that belong to the wallets keys
         let mut receipts: Vec<receipt::Receipt> = vec![];
+        let mut unused: Vec<crypto::hash::Hash> = vec![];
         for keypair in self.wallet.get_keypairs() {
             // First hash the public key
             let public_key_hash = {
@@ -34,8 +35,14 @@ impl CashBook {
             // Then search for the transaction output
             // and continue if it has already been used
             let output = match self.blockchain.get_valid_output(&public_key_hash) {
-                Some(output) => output,
-                None => continue,
+                Ok(output) => output,
+                Err(error) => match error {
+                    blockchain::InvalidOutput::NotFound => {
+                        unused.push(public_key_hash);
+                        continue;
+                    }
+                    blockchain::InvalidOutput::AlreadyUsed => continue,
+                },
             };
 
             // Reload the keypair for the receipt
@@ -47,7 +54,14 @@ impl CashBook {
             // Then save it
             receipts.push(receipt);
         }
-        balance::Balance::create(receipts)
+        balance::Balance::create(receipts, unused)
+    }
+
+    /// Create a new keypair that will be saved in the wallet
+    /// and return the public key pair hash that should be used
+    /// for the transaction output.
+    pub fn create_keypair(&mut self) -> crypto::hash::Hash {
+        self.wallet.create_keypair()
     }
 }
 
@@ -58,7 +72,7 @@ impl fmt::Display for CashBook {
         let balance = self.get_balance();
         write!(
             f,
-            ">>> [CashBook] <<<\n\n{}\n ===\n{}\n<<< [CashBook] >>>",
+            ">>> [CashBook] <<<\n\n{}\n\n{}\n<<< [CashBook] >>>",
             self.wallet, balance
         )
     }

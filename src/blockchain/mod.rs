@@ -9,6 +9,25 @@ use bincode;
 use serde;
 use std::fs;
 
+/// An enum to indicate values that an output
+/// can take if it is searched for.
+/// Could also be called 'WorthlessOutput'
+/// because if one of these occurs, the output
+/// doesn't hold coins.
+#[derive(Debug)]
+pub enum InvalidOutput {
+    /// Not found means that the public key hash of
+    /// a saved value isn't in the blockchain.
+    /// This might be due to the fact that the
+    /// corresponding transaction isn't in the blockchain yet.
+    NotFound,
+
+    /// Then, the output was already used for a payment
+    /// and is from now on worthless.
+    AlreadyUsed,
+}
+
+/// The number of leading zeros the proof-of-concept hash must have.
 const LEADING_ZEROS: usize = 1;
 
 /// A blockchain containing a list of blocks.
@@ -126,10 +145,18 @@ impl BlockChain {
 
     /// Search through all blocks in the output and return the
     /// output if it wasn't already used.
-    /// Panics, if the output couldn't been found.
-    pub fn get_valid_output(&self, output_hash: &hash::Hash) -> Option<&output::Output> {
+    /// Returns the output or
+    /// InvalidOutput::AlreadyUsed, if the output was already used.
+    /// InvalidOutput::NotFound, if the output couldn't been found.
+    pub fn get_valid_output(
+        &self,
+        output_hash: &hash::Hash,
+    ) -> Result<&output::Output, InvalidOutput> {
         // First try to get it
-        let output = self.get_output(output_hash);
+        let output = match self.get_output(output_hash) {
+            Ok(output) => output,
+            Err(error) => return Err(error),
+        };
 
         // Then search through all blocks and see if it has already been used
         for block in &self.blocks {
@@ -137,24 +164,24 @@ impl BlockChain {
                 for input in transaction.get_inputs() {
                     let reference_hash = input.get_output_reference();
                     if reference_hash.as_hex() == output_hash.as_hex() {
-                        return None;
+                        return Err(InvalidOutput::AlreadyUsed);
                     }
                 }
             }
         }
 
-        return Some(output);
+        return Ok(output);
     }
 
     /// Searches through all outputs in the blockchain
     /// and return the output if it exists.
     /// Otherwise it panics!
-    fn get_output(&self, output_hash: &hash::Hash) -> &output::Output {
+    fn get_output(&self, output_hash: &hash::Hash) -> Result<&output::Output, InvalidOutput> {
         // First check the first blocks output
         let transaction_output = self.first_block.get_output();
         let owner_hash = transaction_output.get_owner_hash();
         if owner_hash.as_hex() == output_hash.as_hex() {
-            return transaction_output;
+            return Ok(transaction_output);
         }
 
         // Then check all the other blocks
@@ -165,7 +192,7 @@ impl BlockChain {
                 let creation_output = creation.get_output();
                 let creation_hash = creation_output.get_owner_hash();
                 if creation_hash.as_hex() == output_hash.as_hex() {
-                    return transaction_output;
+                    return Ok(transaction_output);
                 }
             }
 
@@ -174,11 +201,11 @@ impl BlockChain {
                 let transaction_output = transaction.get_output();
                 let owner_hash = transaction_output.get_owner_hash();
                 if owner_hash.as_hex() == output_hash.as_hex() {
-                    return transaction_output;
+                    return Ok(transaction_output);
                 }
             }
         }
-        panic!("Could not find the output in the blockchain");
+        Err(InvalidOutput::NotFound)
     }
 }
 

@@ -11,7 +11,6 @@ const INPUT_LENGTH: usize = hash::HASH_LENGTH + validator::VALIDATOR_LENGTH;
 /// to proof ownership of that output.
 #[derive(serde::Serialize, serde::Deserialize)]
 pub struct Input {
-    // TODO: Probably better if the correct block is also known.
     /// The hash that corresponds to the referred output.
     output_reference: hash::Hash,
 

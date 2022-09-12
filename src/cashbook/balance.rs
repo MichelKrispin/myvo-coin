@@ -1,9 +1,11 @@
+use super::crypto;
 use super::receipt;
 
 /// Contains a list of receipts and
 /// the summed amount of them.
 pub struct Balance {
     receipts: Vec<receipt::Receipt>,
+    unused: Vec<crypto::hash::Hash>,
     amount: u64,
 }
 
@@ -11,16 +13,21 @@ impl Balance {
     pub fn empty() -> Self {
         Self {
             receipts: vec![],
+            unused: vec![],
             amount: 0,
         }
     }
 
-    pub fn create(receipts: Vec<receipt::Receipt>) -> Self {
+    pub fn create(receipts: Vec<receipt::Receipt>, unused: Vec<crypto::hash::Hash>) -> Self {
         let mut amount = 0;
         for receipt in &receipts {
             amount += receipt.get_amount();
         }
-        Self { receipts, amount }
+        Self {
+            receipts,
+            unused,
+            amount,
+        }
     }
 
     pub fn add(&mut self, receipt: receipt::Receipt) {
@@ -40,6 +47,12 @@ impl fmt::Display for Balance {
         for receipt in &self.receipts {
             write!(f, " -> {}", receipt)?;
         }
-        Ok(())
+        if self.unused.len() > 0 {
+            write!(f, "\n")?;
+            for not_in_use in &self.unused {
+                write!(f, " -> {} (unused)", not_in_use)?;
+            }
+        }
+        write!(f, "\n")
     }
 }

@@ -23,6 +23,7 @@ impl Hash {
         Self { hash }
     }
 
+    /// Create a clone of this hash.
     pub fn clone(other: &Hash) -> Self {
         let hash: Vec<u8> = other.hash.clone();
         Self { hash }

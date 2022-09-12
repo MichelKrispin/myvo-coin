@@ -1,3 +1,4 @@
+use crate::crypto;
 use crate::crypto::keypair;
 
 use std::fs;
@@ -60,8 +61,32 @@ impl Wallet {
     /// Save all keypairs held by this wallet.
     fn save(&self) {
         for keypair in &self.keypairs {
-            keypair.save(keypair.public_key().as_hex() + ".pk");
+            let filepath = format!(
+                "{}/{}.pk",
+                self.wallet_folder,
+                keypair.public_key().as_hex()
+            );
+            keypair.save(filepath);
         }
+    }
+
+    /// Create a new keypair and save it.
+    /// Then return the public key hash.
+    pub fn create_keypair(&mut self) -> crypto::hash::Hash {
+        // Create a new keypair and generate its hash
+        let keypair = keypair::Keypair::new();
+        let public_key_hash = crypto::hash::Hash::create(keypair.public_key().as_hex());
+
+        // Save it and store it in this wallet
+        let filepath = format!(
+            "{}/{}.pk",
+            self.wallet_folder,
+            keypair.public_key().as_hex()
+        );
+        keypair.save(filepath);
+        self.keypairs.push(keypair);
+
+        public_key_hash
     }
 }
 
