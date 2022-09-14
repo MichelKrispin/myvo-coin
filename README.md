@@ -2,7 +2,7 @@
 
 My very own blockchain coin.
 
-A simple student project to make sense of the blockchain, with its encryption/decryption process and ownership proof.
+A simple student project to make sense of the blockchain with its encryption/decryption process and ownership proof.
 
 The summary:
 
