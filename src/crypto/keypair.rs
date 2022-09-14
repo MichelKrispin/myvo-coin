@@ -31,9 +31,12 @@ impl Keypair {
     /// Should have been stored previously with
     /// the `save` function.
     pub fn load(filename: String) -> Result<Self, String> {
-        let data = match fs::read(filename) {
+        let data = match fs::read(&filename) {
             Ok(data) => data,
-            Err(_) => return Err(String::from("Could not open keypair file")),
+            Err(error) => {
+                let error_string = format!("{}: {}", error.to_string(), filename);
+                return Err(error_string);
+            }
         };
         Ok(Keypair::from_bytes(&data))
     }

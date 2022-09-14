@@ -10,7 +10,7 @@ pub struct Wallet {
 impl Wallet {
     /// Open a wallet in the given directory.
     /// The directory should exist and either contain
-    /// no files at all or .pub files with existing keys.
+    /// no files at all or .pk files with existing keys.
     pub fn open(wallet_folder: String) -> Self {
         let keypairs = Wallet::load(&wallet_folder);
         Self {
@@ -23,7 +23,7 @@ impl Wallet {
         &self.keypairs
     }
 
-    /// Load up all .pub keypairs inside of the `wallet_folder`.
+    /// Load up all .pk keypairs inside of the `wallet_folder`.
     fn load(wallet_folder: &String) -> Vec<crypto::keypair::Keypair> {
         let mut keypairs = vec![];
         // Open up the directory, if it exists.
@@ -44,7 +44,7 @@ impl Wallet {
                             let path_buffer = entry.path();
                             let path = path_buffer.as_path().to_str();
                             if let Some(path) = path {
-                                let keypair = keypair::Keypair::load(String::from(path))
+                                let keypair = crypto::keypair::Keypair::load(String::from(path))
                                     .expect("Error loading keypair");
                                 keypairs.push(keypair);
                                 println!("[Wallet] Loaded {:?}", entry.path());
@@ -80,7 +80,7 @@ impl fmt::Display for Wallet {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, " --- [Wallet] ('{}') ---\n", &self.wallet_folder)?;
         for keypair in &self.keypairs {
-            write!(f, "{}.pub\n", keypair.public_key().as_hex())?;
+            write!(f, "{}.pk\n", keypair.public_key().as_hex())?;
         }
         Ok(())
     }

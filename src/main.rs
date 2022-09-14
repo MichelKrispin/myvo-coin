@@ -192,9 +192,9 @@ fn interface() {
                     [1] Correct\n\
                     [2] Change
                     ",
-                        receiver_public_key_hash.as_hex(),
+                        receiver_public_key_as_hex.trim(),
                         amount,
-                        creation_public_key_hash.as_hex(),
+                        creation_public_key_as_hex.trim(),
                     );
 
                     // Loop until a 1 or 2 was typed
@@ -240,6 +240,7 @@ fn interface() {
 
                 // Then add it to the blockchain
                 blockchain.add_block(block);
+                blockchain.save("blockchain_ext.data");
 
                 // And update the cash book
                 cash_book.update_blockchain(blockchain);

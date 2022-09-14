@@ -30,20 +30,22 @@ impl CashBook {
         // Go through the complete blockchain and search
         // for outputs that belong to the wallets keys
         let mut receipts: Vec<receipt::Receipt> = vec![];
-        let mut unused: Vec<crypto::hash::Hash> = vec![];
+        let mut unused: Vec<String> = vec![];
         for keypair in self.wallet.get_keypairs() {
-            // First hash the public key
-            let public_key_hash = {
+            // First get the public key and hash it
+            let public_key_as_hex = {
                 let public_key = keypair.public_key();
-                crypto::hash::Hash::create(public_key.as_hex())
+                public_key.as_hex()
             };
+            let public_key_hash = crypto::hash::Hash::create(&public_key_as_hex);
+
             // Then search for the transaction output
             // and continue if it has already been used
             let output = match self.blockchain.get_valid_output(&public_key_hash) {
                 Ok(output) => output,
                 Err(error) => match error {
                     blockchain::InvalidOutput::NotFound => {
-                        unused.push(public_key_hash);
+                        unused.push(public_key_as_hex);
                         continue;
                     }
                     blockchain::InvalidOutput::AlreadyUsed => continue,
