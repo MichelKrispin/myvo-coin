@@ -30,9 +30,12 @@ impl Keypair {
     /// Load a keypair from the given file.
     /// Should have been stored previously with
     /// the `save` function.
-    pub fn load(filename: String) -> Self {
-        let data = fs::read(filename).expect("Could not open keypair file");
-        Keypair::from_bytes(&data)
+    pub fn load(filename: String) -> Result<Self, String> {
+        let data = match fs::read(filename) {
+            Ok(data) => data,
+            Err(_) => return Err(String::from("Could not open keypair file")),
+        };
+        Ok(Keypair::from_bytes(&data))
     }
 
     /// Saves this keypair to a file as a raw byte string.

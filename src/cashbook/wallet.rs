@@ -1,10 +1,9 @@
 use crate::crypto;
-use crate::crypto::keypair;
 
 use std::fs;
 
 pub struct Wallet {
-    keypairs: Vec<keypair::Keypair>,
+    keypairs: Vec<crypto::keypair::Keypair>,
     wallet_folder: String,
 }
 
@@ -20,12 +19,12 @@ impl Wallet {
         }
     }
 
-    pub fn get_keypairs(&self) -> &Vec<keypair::Keypair> {
+    pub fn get_keypairs(&self) -> &Vec<crypto::keypair::Keypair> {
         &self.keypairs
     }
 
     /// Load up all .pub keypairs inside of the `wallet_folder`.
-    fn load(wallet_folder: &String) -> Vec<keypair::Keypair> {
+    fn load(wallet_folder: &String) -> Vec<crypto::keypair::Keypair> {
         let mut keypairs = vec![];
         // Open up the directory, if it exists.
         let entries = fs::read_dir(wallet_folder).expect("Could not read the wallet folder");
@@ -45,7 +44,8 @@ impl Wallet {
                             let path_buffer = entry.path();
                             let path = path_buffer.as_path().to_str();
                             if let Some(path) = path {
-                                let keypair = keypair::Keypair::load(String::from(path));
+                                let keypair = keypair::Keypair::load(String::from(path))
+                                    .expect("Error loading keypair");
                                 keypairs.push(keypair);
                                 println!("[Wallet] Loaded {:?}", entry.path());
                             }
@@ -58,35 +58,19 @@ impl Wallet {
         keypairs
     }
 
-    /// Save all keypairs held by this wallet.
-    fn save(&self) {
-        for keypair in &self.keypairs {
-            let filepath = format!(
-                "{}/{}.pk",
-                self.wallet_folder,
-                keypair.public_key().as_hex()
-            );
-            keypair.save(filepath);
-        }
-    }
-
     /// Create a new keypair and save it.
-    /// Then return the public key hash.
-    pub fn create_keypair(&mut self) -> crypto::hash::Hash {
+    /// Then return the public key as hex.
+    pub fn create_keypair(&mut self) -> String {
         // Create a new keypair and generate its hash
-        let keypair = keypair::Keypair::new();
-        let public_key_hash = crypto::hash::Hash::create(keypair.public_key().as_hex());
+        let keypair = crypto::keypair::Keypair::new();
+        let public_key_as_hex = keypair.public_key().as_hex();
 
         // Save it and store it in this wallet
-        let filepath = format!(
-            "{}/{}.pk",
-            self.wallet_folder,
-            keypair.public_key().as_hex()
-        );
+        let filepath = format!("{}/{}.pk", self.wallet_folder, public_key_as_hex);
         keypair.save(filepath);
         self.keypairs.push(keypair);
 
-        public_key_hash
+        public_key_as_hex
     }
 }
 

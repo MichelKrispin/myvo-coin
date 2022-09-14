@@ -18,6 +18,11 @@ impl CashBook {
         Self { wallet, blockchain }
     }
 
+    /// Replace the blockchain with a new blockchain if needed.
+    pub fn update_blockchain(&mut self, blockchain: blockchain::BlockChain) {
+        self.blockchain = blockchain;
+    }
+
     /// Return all the outputs that belong to
     /// the public keys in the wallet and that haven't
     /// been used.
@@ -48,7 +53,7 @@ impl CashBook {
             // Reload the keypair for the receipt
             let copied_keypair = {
                 let keypair_path = format!("keys/{}.pk", keypair.public_key().as_hex());
-                crypto::keypair::Keypair::load(keypair_path)
+                crypto::keypair::Keypair::load(keypair_path).expect("Error loading keypair")
             };
             let receipt = receipt::Receipt::create(output.get_amount(), copied_keypair);
             // Then save it
@@ -58,9 +63,9 @@ impl CashBook {
     }
 
     /// Create a new keypair that will be saved in the wallet
-    /// and return the public key pair hash that should be used
+    /// and return the public key pair as hex that should be used
     /// for the transaction output.
-    pub fn create_keypair(&mut self) -> crypto::hash::Hash {
+    pub fn create_keypair(&mut self) -> String {
         self.wallet.create_keypair()
     }
 }

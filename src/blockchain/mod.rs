@@ -143,6 +143,14 @@ impl BlockChain {
         true
     }
 
+    pub fn get_last_block_hash(&self) -> &hash::Hash {
+        let last_block = self
+            .blocks
+            .last()
+            .expect("Cannot get last block as no blocks exist");
+        last_block.get_hash()
+    }
+
     /// Search through all blocks in the output and return the
     /// output if it wasn't already used.
     /// Returns the output or

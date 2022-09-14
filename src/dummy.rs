@@ -60,7 +60,8 @@ const ALICE2_FILE: &str = "keys/hex_3.pk";
 pub fn small_chain() -> blockchain::BlockChain {
     // Load the keypair for Alice
     // let alice = crypto::keypair::Keypair::new();
-    let alice = crypto::keypair::Keypair::load(ALICE1_FILE.to_string());
+    let alice =
+        crypto::keypair::Keypair::load(ALICE1_FILE.to_string()).expect("Error loading keypair");
     let alice_public_hash = crypto::hash::Hash::create(alice.public_key().as_hex());
     println!("Alice pk:   {}", alice.public_key());
     println!("Alice hash: {}", alice_public_hash);
@@ -75,7 +76,7 @@ pub fn small_chain() -> blockchain::BlockChain {
 
     // Create the keypair for Bob
     // let bob = crypto::keypair::Keypair::new();
-    let bob = crypto::keypair::Keypair::load(BOB_FILE.to_string());
+    let bob = crypto::keypair::Keypair::load(BOB_FILE.to_string()).expect("Error loading keypair");
     let bob_public_hash = crypto::hash::Hash::create(bob.public_key().as_hex());
     println!("Bob   pk:   {}", bob.public_key());
     println!("Bob   hash: {}", bob_public_hash);
@@ -100,7 +101,8 @@ pub fn small_chain() -> blockchain::BlockChain {
     // Then create a Creation for Alice, because she computes the block
     // For that alice gets a new keypair, because the old one was already used.
     // let alice = crypto::keypair::Keypair::new();
-    let alice = crypto::keypair::Keypair::load(ALICE2_FILE.to_string());
+    let alice =
+        crypto::keypair::Keypair::load(ALICE2_FILE.to_string()).expect("Error loading keypair");
     let alice_public_hash = crypto::hash::Hash::create(alice.public_key().as_hex());
     println!("Alice pk:   {}", alice.public_key());
     println!("Alice hash: {}", alice_public_hash);
