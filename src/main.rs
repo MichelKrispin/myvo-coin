@@ -25,8 +25,8 @@ fn interface() {
 
     loop {
         println!(
-            "\n\n      --- [ myvo-coin ] --- \n\
-            .....What do you want to do?.....\n\n\
+            "\n\n\x1b[1m      --- [ myvo-coin ] --- \n\
+            .....What do you want to do?.....\x1b[0m\n\n\
             [1] Print Cash Book information\n\
             [2] Create a new keypair and print the key hash\n\
             [3] Create a new transaction\n\
@@ -62,7 +62,75 @@ fn interface() {
             }
 
             // Create a new transaction
-            3 => println!("Chose [3]"),
+            3 => {
+                let (receiver_public_key_hash, amount, creation_public_key_hashloop) = loop {
+                    // First get the receiver
+                    println!("Please input the public key hash of the recipient.\n");
+                    let mut option = String::new();
+                    io::stdin()
+                        .read_line(&mut option)
+                        .expect("Failed to read line");
+                    let receiver_public_key_hash = option;
+
+                    // Then the amount
+                    let amount = loop {
+                        println!("Please input the amount to be sent.\n");
+                        let mut option = String::new();
+                        io::stdin()
+                            .read_line(&mut option)
+                            .expect("Failed to read line");
+
+                        let amount: u32 = match option.trim().parse() {
+                            Ok(num) => num,
+                            Err(_) => {
+                                println!("Please only type numbers.\n");
+                                continue;
+                            }
+                        };
+                        break amount;
+                    };
+
+                    // Then the receiver of the creation
+                    println!("Please input the public key hash of the creation recipient.\n");
+                    let mut option = String::new();
+                    io::stdin()
+                        .read_line(&mut option)
+                        .expect("Failed to read line");
+                    let creation_public_key_hash = option;
+
+                    // Then ask for correctness
+                    println!("Is this correct?\n");
+
+                    // Loop until a 1 or 2 was typed
+                    let option = loop {
+                        let mut option = String::new();
+                        io::stdin()
+                            .read_line(&mut option)
+                            .expect("Failed to read line");
+
+                        let option: u32 = match option.trim().parse() {
+                            Ok(num) if num == 1 || num == 2 => num,
+                            Ok(_) => {
+                                println!("Please only type in 1 or 2.\n");
+                                continue;
+                            }
+                            Err(_) => {
+                                println!("Please only type numbers.\n");
+                                continue;
+                            }
+                        };
+                        break option;
+                    };
+
+                    // Then return the values if its a 1 or ask again if it was a 2
+                    match option {
+                        1 => break (receiver_public_key_hash, amount, creation_public_key_hash),
+                        _ => continue,
+                    }
+                };
+
+                // Then create a new transaction
+            }
 
             // Quit
             4 => {
