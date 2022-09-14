@@ -4,6 +4,8 @@ My very own blockchain coin.
 
 A simple student project to make sense of the blockchain with its encryption/decryption process and ownership proof.
 
+(This is my first rust project so it is highly likely that there are multiple inefficient copies or strange loops/assignments/struct implementations/etc.)
+
 The summary:
 
 - A simple blockchain where coins can be transferred.
